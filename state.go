@@ -40,7 +40,7 @@ func newState(size int, eip int, espVal uint32) *state {
 	return s
 }
 
-func (s *state) DumpRegisters() {
+func (s *state) dumpRegisters() {
 	for i := 0; i < registersSize; i++ {
 		fmt.Fprintf(os.Stderr, "%s = %08x\n", register(i), s.registers[i])
 	}
@@ -63,15 +63,15 @@ func (s *state) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-func (s *state) EIP() int {
+func (s *state) getEIP() int {
 	return s.eip
 }
 
-func (s *state) AdvanceEIP(d int) {
+func (s *state) advanceEIP(d int) {
 	s.eip += d
 }
 
-func (s *state) SetRegister(r int, v uint32) error {
+func (s *state) setRegister(r int, v uint32) error {
 	if r < 0 || r >= len(s.registers) {
 		return registerOutOfRange(r)
 	}
@@ -79,7 +79,7 @@ func (s *state) SetRegister(r int, v uint32) error {
 	return nil
 }
 
-func (s *state) GetUint8(offset int) (uint8, error) {
+func (s *state) getUint8(offset int) (uint8, error) {
 	i := s.eip + offset
 	if i < 0 || i >= len(s.memory) {
 		return 0, memoryOutOfRange(i)
@@ -87,18 +87,18 @@ func (s *state) GetUint8(offset int) (uint8, error) {
 	return s.memory[i], nil
 }
 
-func (s *state) GetInt8(offset int) (int8, error) {
-	v, err := s.GetUint8(offset)
+func (s *state) getInt8(offset int) (int8, error) {
+	v, err := s.getUint8(offset)
 	if err != nil {
 		return 0, err
 	}
 	return int8(v), nil
 }
 
-func (s *state) GetUint32(offset int) (uint32, error) {
+func (s *state) getUint32(offset int) (uint32, error) {
 	r := uint32(0)
 	for i := 0; i < 4; i++ {
-		v, err := s.GetUint8(offset + i)
+		v, err := s.getUint8(offset + i)
 		if err != nil {
 			return 0, err
 		}
@@ -107,10 +107,10 @@ func (s *state) GetUint32(offset int) (uint32, error) {
 	return r, nil
 }
 
-func (s *state) HasNext() bool {
+func (s *state) hasNext() bool {
 	return s.eip < len(s.memory)
 }
 
-func (s *state) IsEnd() bool {
+func (s *state) isEnd() bool {
 	return s.eip == 0
 }

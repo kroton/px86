@@ -20,9 +20,9 @@ func main() {
 	}
 
 	emu := newEmulator()
-	if err := emu.Load(f); err != nil {
+	if err := emu.load(f); err != nil {
 		fmt.Fprintf(os.Stderr, "%sファイルが読み込めません: %v", fileName, err)
 	}
 
-	emu.Eval()
+	emu.eval()
 }

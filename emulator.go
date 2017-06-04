@@ -24,18 +24,18 @@ func newEmulator() *emulator {
 	}
 }
 
-func (e *emulator) Load(r io.Reader) error {
+func (e *emulator) load(r io.Reader) error {
 	_, err := io.Copy(e.state, r)
 	return err
 }
 
-func (e *emulator) Step() error {
-	code, err := e.state.GetUint8(0)
+func (e *emulator) step() error {
+	code, err := e.state.getUint8(0)
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(os.Stderr, "EIP = %x, Code = %02x\n", e.state.EIP(), code)
+	fmt.Fprintf(os.Stderr, "EIP = %x, Code = %02x\n", e.state.getEIP(), code)
 
 	ins, ok := e.instructions[code]
 	if !ok {
@@ -44,17 +44,17 @@ func (e *emulator) Step() error {
 	return ins(e.state)
 }
 
-func (e *emulator) Eval() {
-	for e.state.HasNext() {
-		if err := e.Step(); err != nil {
+func (e *emulator) eval() {
+	for e.state.hasNext() {
+		if err := e.step(); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			break
 		}
 
-		if e.state.IsEnd() {
+		if e.state.isEnd() {
 			fmt.Fprintf(os.Stderr, "end of program.\n\n")
 			break
 		}
 	}
-	e.state.DumpRegisters()
+	e.state.dumpRegisters()
 }

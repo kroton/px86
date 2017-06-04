@@ -5,28 +5,28 @@ type instruction func(*state) error
 var instructions = map[uint8]instruction{}
 
 func movR32Imm32(s *state) error {
-	r, err := s.GetUint8(0)
+	r, err := s.getUint8(0)
 	if err != nil {
 		return err
 	}
 
-	v, err := s.GetUint32(1)
+	v, err := s.getUint32(1)
 	if err != nil {
 		return err
 	}
 
-	s.SetRegister(int(r-0xb8), v)
-	s.AdvanceEIP(5)
+	s.setRegister(int(r-0xb8), v)
+	s.advanceEIP(5)
 	return nil
 }
 
 func shortJump(s *state) error {
-	d, err := s.GetInt8(1)
+	d, err := s.getInt8(1)
 	if err != nil {
 		return err
 	}
 
-	s.AdvanceEIP(int(d) + 2)
+	s.advanceEIP(int(d) + 2)
 	return nil
 }
 

@@ -15,7 +15,10 @@ func movR32Imm32(s *state) error {
 		return err
 	}
 
-	s.setRegister(int(r-0xb8), v)
+	if err := s.setRegister(int(r-0xb8), v); err != nil {
+		return err
+	}
+
 	s.advanceEIP(5)
 	return nil
 }

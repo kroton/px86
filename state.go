@@ -108,7 +108,7 @@ func (s *state) getUint32(offset int) (uint32, error) {
 }
 
 func (s *state) hasNext() bool {
-	return s.eip < len(s.memory)
+	return 0 <= s.eip && s.eip < len(s.memory)
 }
 
 func (s *state) isEnd() bool {

@@ -18,6 +18,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "%sファイルが開けません: %v", fileName, err)
 		return
 	}
+	defer f.Close()
 
 	emu := newEmulator()
 	if err := emu.load(f); err != nil {

@@ -61,10 +61,6 @@ func (s *state) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-func (s *state) getEIP() int {
-	return s.eip
-}
-
 func (s *state) advanceEIP(d int) {
 	s.eip += d
 }

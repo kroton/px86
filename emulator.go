@@ -39,7 +39,7 @@ func (e *emulator) step() error {
 		return err
 	}
 
-	fmt.Fprintf(os.Stderr, "EIP = %x, Code = %02x\n", e.state.getEIP(), code)
+	fmt.Fprintf(os.Stderr, "EIP = %x, Code = %02x\n", e.state.eip, code)
 
 	ins, ok := e.instructions[code]
 	if !ok {

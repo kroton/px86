@@ -33,9 +33,20 @@ func shortJump(s *state) error {
 	return nil
 }
 
+func nearJump(s *state) error {
+	d, err := s.getInt32(1)
+	if err != nil {
+		return err
+	}
+
+	s.advanceEIP(int(d) + 5)
+	return nil
+}
+
 func init() {
 	for i := 0; i < registersSize; i++ {
 		instructions[uint8(0xb8+i)] = movR32Imm32
 	}
+	instructions[uint8(0xe9)] = nearJump
 	instructions[uint8(0xeb)] = shortJump
 }

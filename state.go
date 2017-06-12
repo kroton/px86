@@ -25,15 +25,17 @@ func (m memoryOutOfRange) Error() string {
 type state struct {
 	registers []uint32
 	memory    []uint8
-	progLast  int
+	progBegin int
+	progLen   int
 	eip       int
 }
 
-func newState(size int, eip int, espVal uint32) *state {
+func newState(size int, eip int, espVal uint32, progBegin int) *state {
 	s := &state{
 		registers: make([]uint32, registersSize),
 		memory:    make([]uint8, size),
-		progLast:  0,
+		progBegin: progBegin,
+		progLen:   0,
 		eip:       eip,
 	}
 	s.registers[esp] = espVal
@@ -48,17 +50,13 @@ func (s *state) dumpRegisters() {
 }
 
 func (s *state) Write(p []byte) (n int, err error) {
-	lim := programMaxLength
-	if len(s.memory) < lim {
-		lim = len(s.memory)
-	}
-
 	for i, v := range p {
-		if s.progLast >= lim {
+		j := s.progBegin + s.progLen
+		if s.progLen >= programMaxLength || j >= len(s.memory) {
 			return i, io.EOF
 		}
-		s.memory[s.progLast] = v
-		s.progLast++
+		s.memory[j] = v
+		s.progLen++
 	}
 	return len(p), nil
 }
@@ -105,6 +103,14 @@ func (s *state) getUint32(offset int) (uint32, error) {
 		r |= uint32(v) << uint(i*8)
 	}
 	return r, nil
+}
+
+func (s *state) getInt32(offset int) (int32, error) {
+	v, err := s.getUint32(offset)
+	if err != nil {
+		return 0, err
+	}
+	return int32(v), err
 }
 
 func (s *state) hasNext() bool {

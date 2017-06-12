@@ -19,7 +19,7 @@ type emulator struct {
 
 func newEmulator() *emulator {
 	return &emulator{
-		state:        newState(1024*1024, 0, 0x7c00),
+		state:        newState(1024*1024, 0x7c00, 0x7c00, 0x7c00),
 		instructions: instructions,
 	}
 }

@@ -13,13 +13,13 @@ const (
 type registerOutOfRange int
 
 func (r registerOutOfRange) Error() string {
-	return fmt.Sprintf("out of registers range: %x", r)
+	return fmt.Sprintf("out of registers range: %x", int(r))
 }
 
 type memoryOutOfRange int
 
 func (m memoryOutOfRange) Error() string {
-	return fmt.Sprintf("out of memory range: %x", m)
+	return fmt.Sprintf("out of memory range: %x", int(m))
 }
 
 type state struct {

@@ -9,7 +9,7 @@ import (
 type codeNotImplemented uint8
 
 func (c codeNotImplemented) Error() string {
-	return fmt.Sprintf("Not Implemented: %x", c)
+	return fmt.Sprintf("Not Implemented: %x", uint8(c))
 }
 
 type emulator struct {

@@ -26,7 +26,7 @@ func parseModrm(s *state) (modrm, error) {
 	if err != nil {
 		return modrm{}, err
 	}
-	s.advanceEIP(1)
+	s.eip += 1
 
 	m.mod = (code & 0xc0) >> 6
 	m.reg = (code & 0x38) >> 3
@@ -37,7 +37,7 @@ func parseModrm(s *state) (modrm, error) {
 		if err != nil {
 			return modrm{}, err
 		}
-		s.advanceEIP(1)
+		s.eip += 1
 	}
 
 	if (m.mod == 0 && m.rm == 5) || m.mod == 2 {
@@ -45,13 +45,13 @@ func parseModrm(s *state) (modrm, error) {
 		if err != nil {
 			return modrm{}, err
 		}
-		s.advanceEIP(4)
+		s.eip += 4
 	} else if m.mod == 1 {
 		m.disp8, err = s.getUint8(0)
 		if err != nil {
 			return modrm{}, err
 		}
-		s.advanceEIP(1)
+		s.eip += 1
 	}
 
 	return m, nil

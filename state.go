@@ -61,10 +61,6 @@ func (s *state) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-func (s *state) advanceEIP(d int) {
-	s.eip += d
-}
-
 func (s *state) getRegister(r int) (uint32, error) {
 	if r < 0 || r >= len(s.registers) {
 		return 0, registerOutOfRange(r)

@@ -23,12 +23,12 @@ func movR32Imm32(s *state) error {
 		return err
 	}
 
-	s.advanceEIP(5)
+	s.eip += 5
 	return nil
 }
 
 func movRm32Imm32(s *state) error {
-	s.advanceEIP(1)
+	s.eip += 1
 
 	m, err := parseModrm(s)
 	if err != nil {
@@ -39,13 +39,13 @@ func movRm32Imm32(s *state) error {
 	if err != nil {
 		return err
 	}
-	s.advanceEIP(4)
+	s.eip += 4
 
 	return setRm32(s, m, v)
 }
 
 func movRm32R32(s *state) error {
-	s.advanceEIP(1)
+	s.eip += 1
 
 	m, err := parseModrm(s)
 	if err != nil {
@@ -61,7 +61,7 @@ func movRm32R32(s *state) error {
 }
 
 func movR32Rm32(s *state) error {
-	s.advanceEIP(1)
+	s.eip += 1
 
 	m, err := parseModrm(s)
 	if err != nil {
@@ -82,7 +82,7 @@ func shortJump(s *state) error {
 		return err
 	}
 
-	s.advanceEIP(int(d) + 2)
+	s.eip += int(d) + 2
 	return nil
 }
 
@@ -92,12 +92,12 @@ func nearJump(s *state) error {
 		return err
 	}
 
-	s.advanceEIP(int(d) + 5)
+	s.eip += int(d) + 5
 	return nil
 }
 
 func addRm32R32(s *state) error {
-	s.advanceEIP(1)
+	s.eip += 1
 
 	m, err := parseModrm(s)
 	if err != nil {
@@ -125,13 +125,13 @@ func subRm32Imm8(s *state, m modrm) error {
 	if err != nil {
 		return err
 	}
-	s.advanceEIP(1)
+	s.eip += 1
 
 	return setRm32(s, m, rm32-uint32(imm8))
 }
 
 func code83(s *state) error {
-	s.advanceEIP(1)
+	s.eip += 1
 
 	m, err := parseModrm(s)
 	if err != nil {
@@ -155,7 +155,7 @@ func incRm32(s *state, m modrm) error {
 }
 
 func codeFF(s *state) error {
-	s.advanceEIP(1)
+	s.eip += 1
 
 	m, err := parseModrm(s)
 	if err != nil {

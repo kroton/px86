@@ -69,6 +69,13 @@ func (s *state) advanceEIP(d int) {
 	s.eip += d
 }
 
+func (s *state) getRegister(r int) (uint32, error) {
+	if r < 0 || r >= len(s.registers) {
+		return 0, registerOutOfRange(r)
+	}
+	return s.registers[r], nil
+}
+
 func (s *state) setRegister(r int, v uint32) error {
 	if r < 0 || r >= len(s.registers) {
 		return registerOutOfRange(r)
@@ -78,25 +85,48 @@ func (s *state) setRegister(r int, v uint32) error {
 }
 
 func (s *state) getUint8(offset int) (uint8, error) {
-	i := s.eip + offset
-	if i < 0 || i >= len(s.memory) {
-		return 0, memoryOutOfRange(i)
-	}
-	return s.memory[i], nil
+	return s.getUint8Addr(s.eip + offset)
 }
 
 func (s *state) getInt8(offset int) (int8, error) {
-	v, err := s.getUint8(offset)
+	return s.getInt8Addr(s.eip + offset)
+}
+
+func (s *state) getUint32(offset int) (uint32, error) {
+	return s.getUint32Addr(s.eip + offset)
+}
+
+func (s *state) getInt32(offset int) (int32, error) {
+	return s.getInt32Addr(s.eip + offset)
+}
+
+func (s *state) getUint8Addr(addr int) (uint8, error) {
+	if addr < 0 || addr >= len(s.memory) {
+		return 0, memoryOutOfRange(addr)
+	}
+	return s.memory[addr], nil
+}
+
+func (s *state) getInt8Addr(addr int) (int8, error) {
+	v, err := s.getUint8Addr(addr)
 	if err != nil {
 		return 0, err
 	}
 	return int8(v), nil
 }
 
-func (s *state) getUint32(offset int) (uint32, error) {
+func (s *state) setUint8Addr(addr int, v uint8) error {
+	if addr < 0 || addr >= len(s.memory) {
+		return memoryOutOfRange(addr)
+	}
+	s.memory[addr] = v
+	return nil
+}
+
+func (s *state) getUint32Addr(addr int) (uint32, error) {
 	r := uint32(0)
 	for i := 0; i < 4; i++ {
-		v, err := s.getUint8(offset + i)
+		v, err := s.getUint8Addr(addr + i)
 		if err != nil {
 			return 0, err
 		}
@@ -105,12 +135,22 @@ func (s *state) getUint32(offset int) (uint32, error) {
 	return r, nil
 }
 
-func (s *state) getInt32(offset int) (int32, error) {
-	v, err := s.getUint32(offset)
+func (s *state) getInt32Addr(addr int) (int32, error) {
+	v, err := s.getUint32Addr(addr)
 	if err != nil {
 		return 0, err
 	}
-	return int32(v), err
+	return int32(v), nil
+}
+
+func (s *state) setUint32Addr(addr int, v uint32) error {
+	for i := 0; i < 4; i++ {
+		v8 := (v >> uint(i*8)) & 0xff
+		if err := s.setUint8Addr(addr+i, uint8(v8)); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (s *state) hasNext() bool {

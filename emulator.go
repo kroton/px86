@@ -29,6 +29,10 @@ func (e *emulator) load(r io.Reader) error {
 	return err
 }
 
+func (e *emulator) canStep() bool {
+	return 0 <= e.state.eip && e.state.eip < len(e.state.memory)
+}
+
 func (e *emulator) step() error {
 	code, err := e.state.getUint8(0)
 	if err != nil {
@@ -44,14 +48,18 @@ func (e *emulator) step() error {
 	return ins(e.state)
 }
 
+func (e *emulator) isEnd() bool {
+	return e.state.eip == 0
+}
+
 func (e *emulator) eval() {
-	for e.state.hasNext() {
+	for e.canStep() {
 		if err := e.step(); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			break
 		}
 
-		if e.state.isEnd() {
+		if e.isEnd() {
 			fmt.Fprintf(os.Stderr, "end of program.\n\n")
 			break
 		}

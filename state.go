@@ -152,11 +152,3 @@ func (s *state) setUint32Addr(addr int, v uint32) error {
 	}
 	return nil
 }
-
-func (s *state) hasNext() bool {
-	return 0 <= s.eip && s.eip < len(s.memory)
-}
-
-func (s *state) isEnd() bool {
-	return s.eip == 0
-}

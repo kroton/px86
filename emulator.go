@@ -30,7 +30,7 @@ func (e *emulator) load(r io.Reader) error {
 }
 
 func (e *emulator) canStep() bool {
-	return 0 <= e.state.eip && e.state.eip < len(e.state.memory)
+	return e.state.eip < e.state.memorySize()
 }
 
 func (e *emulator) step() error {

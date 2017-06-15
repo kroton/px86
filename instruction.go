@@ -19,7 +19,7 @@ func movR32Imm32(s *state) error {
 		return err
 	}
 
-	if err := s.setRegister(int(r-0xb8), v); err != nil {
+	if err := s.setRegister(r-0xb8, v); err != nil {
 		return err
 	}
 
@@ -82,7 +82,8 @@ func shortJump(s *state) error {
 		return err
 	}
 
-	s.eip += int(d) + 2
+	s.eip += 2
+	s.eip += uint32(int32(d))
 	return nil
 }
 
@@ -92,7 +93,8 @@ func nearJump(s *state) error {
 		return err
 	}
 
-	s.eip += int(d) + 5
+	s.eip += 5
+	s.eip += uint32(d)
 	return nil
 }
 
@@ -191,7 +193,7 @@ func pushR32(s *state) error {
 	if err != nil {
 		return err
 	}
-	v, err := s.getRegister(int(r - 0x50))
+	v, err := s.getRegister(r - 0x50)
 	if err != nil {
 		return err
 	}
@@ -239,7 +241,7 @@ func popR32(s *state) error {
 		return err
 	}
 
-	if err := s.setRegister(int(r-0x58), v); err != nil {
+	if err := s.setRegister(r-0x58, v); err != nil {
 		return err
 	}
 	s.eip += 1
@@ -252,11 +254,12 @@ func callRel32(s *state) error {
 		return err
 	}
 
-	if err := s.push(uint32(s.eip + 5)); err != nil {
+	if err := s.push(s.eip + 5); err != nil {
 		return err
 	}
 
-	s.eip += 5 + int(d)
+	s.eip += 5
+	s.eip += uint32(d)
 	return nil
 }
 
@@ -266,16 +269,16 @@ func ret(s *state) error {
 		return err
 	}
 
-	s.eip = int(v)
+	s.eip = v
 	return nil
 }
 
 func leave(s *state) error {
-	ebpVal, err := s.getRegister(int(ebp))
+	ebpVal, err := s.getRegister(ebp)
 	if err != nil {
 		return err
 	}
-	if err := s.setRegister(int(esp), ebpVal); err != nil {
+	if err := s.setRegister(esp, ebpVal); err != nil {
 		return err
 	}
 
@@ -283,7 +286,7 @@ func leave(s *state) error {
 	if err != nil {
 		return err
 	}
-	if err := s.setRegister(int(ebp), v); err != nil {
+	if err := s.setRegister(ebp, v); err != nil {
 		return err
 	}
 
@@ -292,26 +295,26 @@ func leave(s *state) error {
 }
 
 func init() {
-	instructions[uint8(0x01)] = addRm32R32
-	for i := 0; i < registersSize; i++ {
-		instructions[uint8(0x50+i)] = pushR32
+	instructions[0x01] = addRm32R32
+	for i := uint8(0); i < registersSize; i++ {
+		instructions[0x50+i] = pushR32
 	}
-	for i := 0; i < registersSize; i++ {
-		instructions[uint8(0x58+i)] = popR32
+	for i := uint8(0); i < registersSize; i++ {
+		instructions[0x58+i] = popR32
 	}
-	instructions[uint8(0x68)] = pushImm32
-	instructions[uint8(0x6a)] = pushImm8
-	instructions[uint8(0x83)] = code83
-	instructions[uint8(0x89)] = movRm32R32
-	instructions[uint8(0x8b)] = movR32Rm32
-	for i := 0; i < registersSize; i++ {
-		instructions[uint8(0xb8+i)] = movR32Imm32
+	instructions[0x68] = pushImm32
+	instructions[0x6a] = pushImm8
+	instructions[0x83] = code83
+	instructions[0x89] = movRm32R32
+	instructions[0x8b] = movR32Rm32
+	for i := uint8(0); i < registersSize; i++ {
+		instructions[0xb8+i] = movR32Imm32
 	}
-	instructions[uint8(0xc3)] = ret
-	instructions[uint8(0xc9)] = leave
-	instructions[uint8(0xc7)] = movRm32Imm32
-	instructions[uint8(0xe8)] = callRel32
-	instructions[uint8(0xe9)] = nearJump
-	instructions[uint8(0xeb)] = shortJump
-	instructions[uint8(0xff)] = codeFF
+	instructions[0xc3] = ret
+	instructions[0xc9] = leave
+	instructions[0xc7] = movRm32Imm32
+	instructions[0xe8] = callRel32
+	instructions[0xe9] = nearJump
+	instructions[0xeb] = shortJump
+	instructions[0xff] = codeFF
 }

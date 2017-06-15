@@ -1,9 +1,7 @@
 package main
 
-type register int
-
 const (
-	eax register = iota
+	eax uint8 = iota
 	ecx
 	edx
 	ebx
@@ -11,10 +9,10 @@ const (
 	ebp
 	esi
 	edi
-	registersSize int = iota
+	registersSize
 )
 
-func (r register) String() string {
+func registerStr(r uint8) string {
 	switch r {
 	case eax:
 		return "EAX"

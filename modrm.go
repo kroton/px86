@@ -65,7 +65,7 @@ func calcAddress(s *state, m modrm) (uint32, error) {
 		if m.rm == 5 {
 			return m.disp32, nil
 		}
-		return s.getRegister(int(m.rm))
+		return s.getRegister(m.rm)
 	}
 
 	if m.mod == 1 {
@@ -73,7 +73,7 @@ func calcAddress(s *state, m modrm) (uint32, error) {
 			return 0, addressingNotImplemented(m)
 		}
 
-		v, err := s.getRegister(int(m.rm))
+		v, err := s.getRegister(m.rm)
 		if err != nil {
 			return 0, err
 		}
@@ -85,7 +85,7 @@ func calcAddress(s *state, m modrm) (uint32, error) {
 			return 0, addressingNotImplemented(m)
 		}
 
-		v, err := s.getRegister(int(m.rm))
+		v, err := s.getRegister(m.rm)
 		if err != nil {
 			return 0, err
 		}
@@ -97,7 +97,7 @@ func calcAddress(s *state, m modrm) (uint32, error) {
 
 func getRm32(s *state, m modrm) (uint32, error) {
 	if m.mod == 3 {
-		return s.getRegister(int(m.rm))
+		return s.getRegister(m.rm)
 	}
 
 	addr, err := calcAddress(s, m)
@@ -105,12 +105,12 @@ func getRm32(s *state, m modrm) (uint32, error) {
 		return 0, err
 	}
 
-	return s.getUint32Addr(int(addr))
+	return s.getUint32Addr(addr)
 }
 
 func setRm32(s *state, m modrm, v uint32) error {
 	if m.mod == 3 {
-		return s.setRegister(int(m.rm), v)
+		return s.setRegister(m.rm, v)
 	}
 
 	addr, err := calcAddress(s, m)
@@ -118,13 +118,13 @@ func setRm32(s *state, m modrm, v uint32) error {
 		return err
 	}
 
-	return s.setUint32Addr(int(addr), v)
+	return s.setUint32Addr(addr, v)
 }
 
 func getR32(s *state, m modrm) (uint32, error) {
-	return s.getRegister(int(m.reg))
+	return s.getRegister(m.reg)
 }
 
 func setR32(s *state, m modrm, v uint32) error {
-	return s.setRegister(int(m.reg), v)
+	return s.setRegister(m.reg, v)
 }

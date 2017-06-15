@@ -121,13 +121,13 @@ func subRm32Imm8(s *state, m modrm) error {
 	if err != nil {
 		return err
 	}
-	imm8, err := s.getUint8(0)
+	imm8, err := s.getInt8(0)
 	if err != nil {
 		return err
 	}
 	s.eip += 1
 
-	return setRm32(s, m, rm32-uint32(imm8))
+	return setRm32(s, m, rm32-uint32(int32(imm8)))
 }
 
 func code83(s *state) error {

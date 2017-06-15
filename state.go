@@ -130,7 +130,7 @@ func (s *state) getUint32Addr(addr uint32) (uint32, error) {
 		if err != nil {
 			return 0, err
 		}
-		r |= uint32(v) << uint(i*8)
+		r |= uint32(v) << (i * 8)
 	}
 	return r, nil
 }
@@ -145,7 +145,7 @@ func (s *state) getInt32Addr(addr uint32) (int32, error) {
 
 func (s *state) setUint32Addr(addr uint32, v uint32) error {
 	for i := uint32(0); i < 4; i++ {
-		v8 := (v >> uint(i*8)) & 0xff
+		v8 := (v >> (i * 8)) & 0xff
 		if err := s.setUint8Addr(addr+i, uint8(v8)); err != nil {
 			return err
 		}

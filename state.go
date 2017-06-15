@@ -44,7 +44,7 @@ func newState(size uint32, eip uint32, espVal uint32, progBegin uint32) *state {
 
 func (s *state) dumpRegisters() {
 	for i := uint8(0); i < registersSize; i++ {
-		fmt.Fprintf(os.Stderr, "%s = %08x\n", registerStr(i), s.registers[i])
+		fmt.Fprintf(os.Stderr, "%s = %08x\n", registerName(i), s.registers[i])
 	}
 	fmt.Fprintf(os.Stderr, "EIP = %08x\n", s.eip)
 }

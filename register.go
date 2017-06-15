@@ -12,7 +12,7 @@ const (
 	registersSize
 )
 
-func registerStr(r uint8) string {
+func registerName(r uint8) string {
 	switch r {
 	case eax:
 		return "EAX"

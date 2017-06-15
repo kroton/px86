@@ -144,3 +144,35 @@ func (s *state) setUint32Addr(addr int, v uint32) error {
 	}
 	return nil
 }
+
+func (s *state) push(v uint32) error {
+	r, err := s.getRegister(int(esp))
+	if err != nil {
+		return err
+	}
+	addr := r - 4
+
+	if err := s.setRegister(int(esp), addr); err != nil {
+		return err
+	}
+	if err := s.setUint32Addr(int(addr), v); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *state) pop() (uint32, error) {
+	addr, err := s.getRegister(int(esp))
+	if err != nil {
+		return 0, err
+	}
+	v, err := s.getUint32Addr(int(addr))
+	if err != nil {
+		return 0, err
+	}
+
+	if err := s.setRegister(int(esp), addr+4); err != nil {
+		return 0, err
+	}
+	return v, nil
+}

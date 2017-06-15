@@ -9,7 +9,7 @@ type modrm struct {
 	reg    uint8
 	rm     uint8
 	sib    uint8
-	disp8  uint8
+	disp8  int8
 	disp32 uint32
 }
 
@@ -47,7 +47,7 @@ func parseModrm(s *state) (modrm, error) {
 		}
 		s.eip += 4
 	} else if m.mod == 1 {
-		m.disp8, err = s.getUint8(0)
+		m.disp8, err = s.getInt8(0)
 		if err != nil {
 			return modrm{}, err
 		}
@@ -77,7 +77,7 @@ func calcAddress(s *state, m modrm) (uint32, error) {
 		if err != nil {
 			return 0, err
 		}
-		return v + uint32(m.disp8), nil
+		return v + uint32(int32(m.disp8)), nil
 	}
 
 	if m.mod == 2 {
